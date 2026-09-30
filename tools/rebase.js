@@ -9,7 +9,7 @@ const ROOT=path.join(__dirname,'..');
 const EX=new Set(['tools','orig','.git','node_modules']);
 const EXT=['.html','.js','.css','.webmanifest','.json'];
 const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-const AHEAD='[\\/\\x27"?#),;\\s\\]}\\x60]';
+const AHEAD='[\\/\\\\\\x27"?#),;\\s\\]}\\x60]';
 
 // segmentos que sao caminhos do APP (assets e rotas) - nunca URLs externas.
 // (supabase usa /admin /object /token /user /recovery /rpc /vector ... e fica de fora)
@@ -26,6 +26,18 @@ const HOME=[
   ['start_url":"/"',     'start_url":"{B}/"']
 ];
 const withB=(s,B)=>s.replace(/\{B\}/g,B);
+// O espelho removeu o wrapper /_next/image?url=... e deixou o valor interno percent-encoded
+// ("%2Fimagens%2Fx.png"), que o navegador resolve como caminho RELATIVO a rota -> 404.
+// Aqui ele volta a virar caminho absoluto (/imagens/x.png); o base e aplicado depois.
+const encB=B=>encodeURIComponent(String(B).replace(/^\//,''));
+const decRe=()=>new RegExp(
+  '(?<=[("\'\\s,])%2F(?:'+T.join('|')+')(?:%2F[A-Za-z0-9._~%\\-]+)*(?=["\'\\s,)]|$)','g');
+function decodeEnc(s,B){
+  return s.replace(decRe(),m=>{
+    try{const d=decodeURIComponent(m);hits['DECODED']=(hits['DECODED']||0)+1;return d;}
+    catch(e){return m;}
+  });
+}
 
 function walk(d,out=[]){for(const f of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,f.name);
   if(f.isDirectory()){if(EX.has(f.name))continue;walk(p,out);}
@@ -53,7 +65,9 @@ for(const p of walk(ROOT)){
   if(OLD){                                   // 1) remove o base atual
     for(const [plain,withB0] of HOME)s=s.split(withB(withB0,OLD)).join(plain);
     s=s.replace(segRe('strip'),(m,p1)=>'/'+p1);
+    s=s.split('%2F'+encB(OLD)+'%2F').join('%2F');      // forma percent-encoded
   }
+  s=decodeEnc(s);                            // 1b) %2Fimagens%2Fx.png -> /imagens/x.png
   if(NEW){                                   // 2) aplica o base novo
     s=s.replace(segRe('apply'),m=>{hits[m]=(hits[m]||0)+1;return NEW+m;});
     for(const [plain,withB0] of HOME){

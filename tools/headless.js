@@ -1,13 +1,14 @@
 const {spawnSync}=require('child_process'),fs=require('fs'),path=require('path'),os=require('os');
 const CHROME='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const PORT=process.env.PORT||8080;
+const SITE=process.env.SITE||('http://localhost:'+PORT);
 const B=(()=>{const r=require('./base');return r?String(r).replace(/^\/?/,'/').replace(/\/+$/,''):''})();
 const routes=process.argv.slice(2).filter(a=>!a.startsWith('--'));
 const list=routes.length?routes:['/','/jogar','/roleta','/login','/cadastro','/gerente/login','/bonus','/termos'];
 const noise=/AudioContext|beforeinstallprompt|preloaded using link|Download the React DevTools/;
 let fails=0;
 for(const r of list){
-  const url='http://localhost:'+PORT+B+r;
+  const url=SITE+B+r;
   const tag=r.replace(/[^a-z0-9]/gi,'')||'home';
   const res=spawnSync(CHROME,['--headless=new','--disable-gpu','--no-sandbox','--virtual-time-budget=12000',
     '--user-data-dir='+path.join(os.tmpdir(),'cc_'+tag),'--enable-logging=stderr','--v=0','--dump-dom',url],
