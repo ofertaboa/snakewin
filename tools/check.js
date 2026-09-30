@@ -1,6 +1,9 @@
 const http=require('http'),fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..');
-const BASE='http://localhost:'+(process.env.PORT||8080);
+const HOST='http://localhost:'+(process.env.PORT||8080);
+const RAW=require('./base');
+const B=RAW?(String(RAW).startsWith('/')?String(RAW):'/'+String(RAW)).replace(/\/+$/g,''):'';
+const url=u=>B&&!(u===B||u.startsWith(B+'/'))?B+u:u;
 const pages=['/','/jogar/','/login/','/cadastro/','/roleta/','/bonus/','/termos/','/gerente/login/'];
 const redirects={
   '/gerente':'/gerente/login','/gerente/comissoes':'/gerente/login','/gerente/criar-demo':'/gerente/login',
@@ -13,23 +16,26 @@ function refs(dir){
     if(f.isDirectory()){if(['tools','orig'].includes(f.name))continue;walk(p);}
     else if(/\.(html|js|css|json|webmanifest)$/i.test(f.name)){
       let t;try{t=fs.readFileSync(p,'utf8')}catch(e){continue}
-      const re=/(?:["'(=])((?:\/(?:_next|imagens|audio|video|fonts)\/|\/[a-z][a-z0-9\-\/]*\/)[^"'\s\\<>()]*?\.(?:html|js|css|png|jpe?g|webp|gif|svg|ico|bmp|avif|mp3|MP3|ogg|wav|m4a|mp4|webm|m3u8|woff2?|ttf|otf|json|webmanifest|txt|xml))/g;
+      const re=/(?:["'(=])((?:\/(?:_next|imagens|audio|video|fonts)\/|\/[a-z][a-z0-9\-\/]*\/)[^"'\s\\<>()]*?\.(?:html|js|css|png|jpe?g|webp|gif|svg|ico|bmp|avif|mp3|MP3|ogg|wav|m4a|mp4|webmanifest|webm|m3u8|woff2?|ttf|otf|json|txt|xml))/g;
       let m;while((m=re.exec(t)))set.add(m[1].split('?')[0]);
     }}};
   walk(dir);return [...set];
 }
 (async()=>{
   const bad=[];
-  for(const r of pages){const x=await fetch(BASE+r);if(x.code!==200)bad.push([r,x.code]);console.log(x.code,r,x.len);}
+  console.log('base path:',JSON.stringify(B));
+  for(const r of pages){const x=await fetch(HOST+url(r));if(x.code!==200)bad.push([r,x.code]);console.log(x.code,r,x.len);}
   for(const r of Object.keys(redirects)){
-    const x=await fetch(BASE+r);
-    const ok=x.code===307&&x.loc===redirects[r];
+    const x=await fetch(HOST+url(r));
+    const want=B+redirects[r];
+    const ok=x.code===307&&x.loc===want;
     if(!ok)bad.push([r,x.code,x.loc]);
-    console.log(x.code,r,'->',x.loc,ok?'OK':'FALHOU');
+    console.log(x.code,r,'->',x.loc,ok?'OK':'FALHOU (esperado '+want+')');
   }
   const list=refs(ROOT);
   console.log('checking refs:',list.length);
-  for(const u of list){const x=await fetch(BASE+u);if(x.code!==200){bad.push([u,x.code]);console.log('FAIL',x.code,u);}}
+  for(const u of list){const x=await fetch(HOST+url(u));if(x.code!==200){bad.push([u,x.code]);console.log('FAIL',x.code,u);}}
   console.log('\n=== FALHAS:',bad.length,'===');
   bad.forEach(b=>console.log(b.join('  ')));
+  process.exit(bad.length?1:0);
 })();

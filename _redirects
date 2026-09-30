@@ -1,11 +1,24 @@
-# Redirecionamentos do SnakeWin (idênticos aos do site original)
-# Compatível com Netlify e Cloudflare Pages
+# Redirecionamentos do SnakeWin (identicos aos do site original)
+# Compativel com Netlify e Cloudflare Pages.
+# Troque o prefixo /snakewin conforme o dominio:
+#   GitHub Pages de projeto -> /snakewin
+#   Netlify / Cloudflare Pages / dominio proprio -> "" (raiz)
+# Depois rode: node tools\rebase.js   (para os HTML/JS acompanhar)
 
-/gerente                    /gerente/login    307
-/gerente/comissoes          /gerente/login    307
-/gerente/criar-demo         /gerente/login    307
-/gerente/indicados          /gerente/login    307
-/gerente/indicar            /gerente/login    307
-/gerente/meus-saques        /gerente/login    307
-/gerente/notificacoes       /gerente/login    307
-/gerente/perfil             /gerente/login    307
+/snakewin/gerente                /snakewin/gerente/login    307
+/snakewin/gerente/comissoes      /snakewin/gerente/login    307
+/snakewin/gerente/criar-demo     /snakewin/gerente/login    307
+/snakewin/gerente/indicados      /snakewin/gerente/login    307
+/snakewin/gerente/indicar        /snakewin/gerente/login    307
+/snakewin/gerente/meus-saques    /snakewin/gerente/login    307
+/snakewin/gerente/notificacoes   /snakewin/gerente/login    307
+/snakewin/gerente/perfil         /snakewin/gerente/login    307
+
+/gerente                /gerente/login    307
+/gerente/comissoes      /gerente/login    307
+/gerente/criar-demo     /gerente/login    307
+/gerente/indicados      /gerente/login    307
+/gerente/indicar        /gerente/login    307
+/gerente/meus-saques    /gerente/login    307
+/gerente/notificacoes   /gerente/login    307
+/gerente/perfil         /gerente/login    307

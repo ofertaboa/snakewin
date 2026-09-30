@@ -65,4 +65,7 @@ function rewriteHtml(){
   let lm=0;
   for(const p of jsFiles)if(fs.readFileSync(p,'utf8').includes('?url=')){lm++;console.log('LOADER NOT PATCHED ->',path.relative(ROOT,p));}
   console.log('leftover html:',left,'| unpatched loaders:',lm);
+  const base=require('./base');
+  console.log('rebase -> base',JSON.stringify(base));
+  require('child_process').execFileSync(process.execPath,[path.join(__dirname,'rebase.js')],{stdio:'inherit'});
 })().catch(e=>{console.error('FATAL',e);process.exit(1)});
