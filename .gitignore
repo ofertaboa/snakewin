@@ -1,0 +1,10 @@
+# Site antigo e arquivos avulsos do usuário — não fazem parte do deploy
+orig/
+d.html
+
+# Artigens/lixo de ferramenta
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+node_modules/

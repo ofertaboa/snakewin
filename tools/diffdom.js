@@ -1,0 +1,10 @@
+﻿const fs=require('fs');
+const a=fs.readFileSync(process.argv[2],'utf8');
+const b=fs.readFileSync(process.argv[3],'utf8');
+const body=s=>{const i=s.indexOf('<body');return i<0?s:s.slice(i);};
+const norm=s=>s.replace(/\s+/g,' ').replace(/> </g,'><').trim();
+const A=norm(body(a)),B=norm(body(b));
+let i=0;while(i<A.length&&i<B.length&&A[i]===B[i])i++;
+console.log('server body len',A.length,'dom body len',B.length,'first diff at',i);
+console.log('\nSERVER ...',JSON.stringify(A.slice(Math.max(0,i-250),i+350)));
+console.log('\nDOM    ...',JSON.stringify(B.slice(Math.max(0,i-250),i+350)));

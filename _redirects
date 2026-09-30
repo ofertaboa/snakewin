@@ -1,0 +1,11 @@
+# Redirecionamentos do SnakeWin (idênticos aos do site original)
+# Compatível com Netlify e Cloudflare Pages
+
+/gerente                    /gerente/login    307
+/gerente/comissoes          /gerente/login    307
+/gerente/criar-demo         /gerente/login    307
+/gerente/indicados          /gerente/login    307
+/gerente/indicar            /gerente/login    307
+/gerente/meus-saques        /gerente/login    307
+/gerente/notificacoes       /gerente/login    307
+/gerente/perfil             /gerente/login    307
